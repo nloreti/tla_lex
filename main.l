@@ -6,20 +6,24 @@
 
 gramatica_struct * gramatica;
 %} 
-%x	PALABRA
-MINUSCULA	[a-z]
-MAYUSCULA	[A-Z]
+
+
 %%
+\{(" "?[A-Z]" "?,)*(" "?[A-Z]" "?)\} {printf("%s\n",yytext);};
+\{(" "?[a-z]" "?,)*(" "?[a-z]" "?)\} {printf("%s\n",yytext);};
+[A-Z] {printf("%s\n",yytext);};
+([A-Z]" "?)->(" "?((\\|([a-z]|[A-Z])+)" "?\|" "?)*(" "?\\|([a-z]|[A-Z])+)" "?) {printf("%s\n",yytext);};
+.*" "?= ;
 . ;
 \n ;
-
 %%
 
 int
 main(int argc, char* argv[]){
 	FILE* fileToOpen= fopen(argv[1], "r");
 	if(fileToOpen== NULL)
-		printf("Error al abrir el archivo");
+		printf("Error al abrir el archivo\n");
+		
 	
 	yyin=fileToOpen;
 	
