@@ -23,7 +23,6 @@ main(int argc, char* argv[]){
 	FILE* fileToOpen= fopen(argv[1], "r");
 	if(fileToOpen== NULL)
 		printf("Error al abrir el archivo\n");
-		
 	
 	yyin=fileToOpen;
 	

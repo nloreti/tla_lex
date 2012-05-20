@@ -65,8 +65,8 @@ int initializeFunctions();
 int initializeNonTerminals();
 int initializeTerminals();
 
-int addTerminal(char *);
-int addNonTermianl(char *);
+int addTerminals(char *);
+int addNonTermianls(char *);
 int addProduction(char *);
 
 //Automata Funciones
