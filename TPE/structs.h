@@ -65,14 +65,23 @@ int initializeFunctions();
 int initializeNonTerminals();
 int initializeTerminals();
 
-int addTerminal(char *);
-int addNonTermianl(char *);
-int addProduction(char *);
+int addTerminal(char);
+int addTerminalSymbols(char *);
+
+int addNonTerminal(char);
+int addNonTerminalSymbols(char *);
+
+int addProduction(char, char, char);
+int addProductionSymbols(char *);
 
 //Automata Funciones
 automata * createAutomata();
 
 
+void showTerminalSymbols();
+void showNonTerminalSymbols();
 
+void addInitialSymbol(char * c);
+void showInitialSymbol();
 
 
