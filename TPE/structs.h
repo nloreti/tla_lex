@@ -72,6 +72,7 @@ int addProduction(char *);
 //Automata Funciones
 automata * createAutomata();
 
+void reportError(char* msg,char* error);
 
 
 
