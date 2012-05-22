@@ -23,10 +23,22 @@ main(){
 	addTerminalSymbols("{A,B,C}");
 	addNonTerminalSymbols("{a,b,c}");
 	addInitialSymbol("A");
+	addProductionSymbols("{ A -> bC|cD, B -> bD, C->C}");
+	
 	
 	showTerminalSymbols();
 	showNonTerminalSymbols();
 	showInitialSymbol();
+	showProductionSymbols();
+	
+	FILE * file
+	makeDotFile(file);
+}
+
+void makeDotFile(FILE * file){
+	//Crear el archivo.
+	file=fopen(“data”,”rw”);
+	//Insertar lineas.
 	
 }
 
@@ -106,6 +118,7 @@ int addProductionSymbols(char * string){
 				fright = -1;
 				sright = -1;
 			}else if ( string[i] == ','){
+				addProduction(left,fright,sright);
 				flag = 0;
 				fright = -1;
 				sright = -1;
@@ -125,8 +138,8 @@ int addProduction(char leftside, char rightside1, char rightside2){
 	int size = gramatica->production_function->size;
 	gramatica->production_function->productions[size].leftsimbol = leftside;
 	gramatica->production_function->productions[size].rightsimbols[0] = rightside1;
-	gramatica->production_function->productions[size].rightsimbols[0] = rightside2;
-	gramatica->production_function->size = size++;
+	gramatica->production_function->productions[size].rightsimbols[1] = rightside2;
+	gramatica->production_function->size = size + 1;
 	return 1;
 }
 
@@ -142,7 +155,7 @@ int initializeFunctions(){
 	gramatica->production_function =malloc(sizeof(production_function_struct));
 	if(gramatica->production_function == NULL)
 	return 0;
-	gramatica->production_function->productions=NULL;
+	gramatica->production_function->productions=malloc(sizeof(production_struct)*MAXLENGHT);
 	gramatica->production_function->size=0;
 	return 1;
 }
@@ -190,5 +203,14 @@ void showInitialSymbol(){
 	
 	printf("Simbolo Inicial\n");
 		printf("%c\n", gramatica->initial);
+	printf("End\n\n");
+}
+
+void showProductionSymbols(){
+	int i;
+	printf("Producciones\n");
+	for( i = 0; i < gramatica->production_function->size; i++){
+		printf("%c -> %c%c\n", gramatica->production_function->productions[i].leftsimbol, gramatica->production_function->productions[i].rightsimbols[0],gramatica->production_function->productions[i].rightsimbols[1]);
+	}
 	printf("End\n\n");
 }

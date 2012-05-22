@@ -7,7 +7,7 @@ typedef struct{
 typedef struct{
 	production_struct* productions;
 	int size;
-	}production_function_struct;
+}production_function_struct;
 
 typedef struct{
 	char * nonterminals;
@@ -80,8 +80,9 @@ automata * createAutomata();
 
 void showTerminalSymbols();
 void showNonTerminalSymbols();
+void showProductionSymbols();
+void showInitialSymbol();
 
 void addInitialSymbol(char * c);
-void showInitialSymbol();
 
 
