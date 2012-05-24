@@ -25,20 +25,56 @@ main(){
 	addInitialSymbol("A");
 	addProductionSymbols("{ A -> bC|cD, B -> bD, C->C}");
 	
+	//Si A->C (Entonces elimino unitarias)
 	
 	showTerminalSymbols();
 	showNonTerminalSymbols();
 	showInitialSymbol();
 	showProductionSymbols();
 	
-	FILE * file
+	FILE * file;
 	makeDotFile(file);
 }
 
 void makeDotFile(FILE * file){
+	int i,j,k;
 	//Crear el archivo.
-	file=fopen(“data”,”rw”);
+	file=fopen("file.dot","w+");
 	//Insertar lineas.
+	fputs("digraph{\n",file);
+	//Inserta no terminales
+	for (i = 0; i < gramatica->nonterminals->size; i++){
+		fputs("node[shape=circle] ",file);
+		fputc( gramatica->nonterminals->nonterminals[i],file);
+		fputs(" [label=\"",file);
+		fputc((char)i+'0',file);
+		fputs("\"];\n",file);		
+	}
+	//terminales
+	for (j = 0; j < gramatica->terminals->size; j++, i++){
+	
+		fputs("node[shape=doublecircle] ",file);
+		fputc( gramatica->terminals->terminal[j],file);
+		fputs(" [label=\"",file);
+		fputc((char)i+'0',file);
+		fputs("\"];\n",file);		
+	}
+	
+	//Transiciones
+	for (k = 0; k < gramatica->production_function->size; k++, i++){
+	
+		char left = gramatica->production_function->productions[k].leftsimbol;
+		char right = gramatica->production_function->productions[k].rightsimbols[1];
+		char label = gramatica->production_function->productions[k].rightsimbols[0];
+		fputc(left,file);
+		fputs("->",file);
+		fputc(right,file);
+		fputs(" [label=\"",file);
+		fputc(label,file);
+		fputs("\"];\n",file);		
+	}
+	
+	return;
 	
 }
 

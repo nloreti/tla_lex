@@ -84,5 +84,5 @@ void showProductionSymbols();
 void showInitialSymbol();
 
 void addInitialSymbol(char * c);
-
+void makeDotFile(FILE * file);
 
