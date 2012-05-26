@@ -1,4 +1,12 @@
+
+#define BLOCK 10
+
+
 //GRAFMATICA
+
+
+
+
 typedef struct{
 	char leftsimbol;
 	char rightsimbols[2];
@@ -56,7 +64,7 @@ typedef struct{
 	language_struct * language;
 	char initial;
 	statechange_struct ** delta;	
-}automata;
+}automata_struct;
 
 
 //Gramatica Funciones
@@ -65,12 +73,19 @@ int initializeFunctions();
 int initializeNonTerminals();
 int initializeTerminals();
 
-int addTerminals(char *);
-int addNonTermianls(char *);
-int addProduction(char *);
+int addTerminal(char c);
+int addNonTerminal(char c);
+int addInitialSymbol(char c);
+int addProduction(char c);
+void getProductionLeftPart(char c);
+int getProduction(char* c,int lenght);
+void showProductionSymbols();
+void showInitialSymbol();
+void showNonTerminalSymbols();
+void showTerminalSymbols();
 
 //Automata Funciones
-automata * createAutomata();
+void createAutomata();
 
 void reportError(char* msg,char* error);
 
