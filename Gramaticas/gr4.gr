@@ -1,4 +1,1 @@
-Gramatica4 = ({S, B, C}, {a,b,c}, S,
-	{S->B | a,
-	B->cS | \,
-	C->bC | \})
+G1 = ({A, B, C}, {a, b, c},A, { A -> Bb|C, B -> Bb|Cb, C->c}) 
