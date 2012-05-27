@@ -1,4 +1,7 @@
+#define BLOCK 10
+
 //GRAFMATICA
+
 typedef struct{
 	char leftsimbol;
 	char rightsimbols[2];
@@ -28,13 +31,20 @@ typedef struct{
 }gramatica_struct;
 
 //AUTOMATA
+
 typedef struct{
-	char * nodos;
+	char label;
+	char* name;
+}node_struct;
+
+typedef struct{
+	node_struct** nodes;
 	int size;
-}nonfinals_struct;
+}nodes_struct;
+
 	
 typedef struct{
-	char * nodos;
+	char * nodes;
 	int size;
 }finals_struct;
 
@@ -49,14 +59,18 @@ typedef struct{
 	char transition;
 }statechange_struct;
 
-
 typedef struct{
-	nonfinals_struct * nonfinals;
+	statechange_struct ** delta;
+	int size;
+	}delta_struct;
+	
+typedef struct{
+	nodes_struct * nodes;
 	finals_struct * finals;
 	language_struct * language;
 	char initial;
-	statechange_struct ** delta;	
-}automata;
+	delta_struct * delta;	
+}automata_struct;
 
 
 //Gramatica Funciones
@@ -65,20 +79,15 @@ int initializeFunctions();
 int initializeNonTerminals();
 int initializeTerminals();
 
-int addTerminal(char);
+
 int addTerminalSymbols(char *);
-
-int addNonTerminal(char);
 int addNonTerminalSymbols(char *);
-
-
 void eliminateUnreach();
 void eliminateInproductive();
 int isContained(char, char * , int);
-
 void left_eliminateUnitaries();
 void left_normalize();
-int addProduction(char, char, char);
+int addProductions(char, char, char);
 int addProductionSymbols(char *);
 
 void rotate_productions();
@@ -89,16 +98,41 @@ int addTerminals(char *);
 int addNonTermianls(char *);
 int addProduction(char *);
 
-//Automata Funciones
-automata * createAutomata();
-
-void reportError(char* msg,char* error);
-
-void showTerminalSymbols();
-void showNonTerminalSymbols();
+int addTerminal(char c);
+int addNonTerminal(char c);
+int addInitialSymbol(char c);
+void addInitialSymbols(char * c);
+int addProduction(char c);
+void getProductionLeftPart(char c);
+int getProduction(char* c,int lenght);
 void showProductionSymbols();
 void showInitialSymbol();
+void showNonTerminalSymbols();
+void showTerminalSymbols();
 
-void addInitialSymbol(char * c);
+
+//Automata Funciones
+int createAutomata();
+int initializeNodes();
+int initilizeFinals();
+int initializeLanguage();
+int initializeDelta();
+int insertFinal(char c);
+int getLabel(char c);
+int insertNode(char* name, int lenght);
+void showNodes();
+void showFinals();
+int getTransitionLeftPart(char* c);
+int getTransitionRightPart(char* c);
+int getLabelTransition(char c);
+void showTransitions();
+void reportError(char* msg,char* error);
+
+int createNewTransition(char leftLabel,char rightLabel, char transition);
+int addLabel(char c);
+int labelExist(char c);
+int addLabelToLenguage(char c);
+void showLenguage();
+
 void makeDotFile(FILE * file);
 

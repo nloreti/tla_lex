@@ -43,7 +43,7 @@ char leftPart=0;
 <INITIALS>, ;BEGIN(ENDINITIALS);
 <ENDINITIALS>\{ BEGIN(LEFTPRODUCTION);
 <LEFTPRODUCTION>[A-Z] {getProductionLeftPart(*yytext);}; BEGIN(ARROW);
-<LEFTPRODUCTION>[^A-Z]|[^(" "|\t)] {reportError("una parte izquierda de producciones",yytext);};BEGIN(ERROR);
+<LEFTPRODUCTION>([^(" "|\t|\n)]|[^A-Z]){1,1} {reportError("La parte izquiera de la produccion",yytext);}BEGIN(ERROR);
 <ARROW>-> BEGIN(RIGHTPRODUCTION);
 <RIGHTPRODUCTION>([A-Z][a-z]|[a-z][A-Z]|[a-z]|[A-Z]|\\) {getProduction(yytext,yyleng);}; BEGIN(PRODSEPARATOR);
 <RIGHTPRODUCTION>(([A-Z]|[a-z]|\\){3,310}|[A-Z]{2,2}|[a-z]{2,2}) {reportError("una parte derecha de producciones", yytext);}; BEGIN(ERROR);	
