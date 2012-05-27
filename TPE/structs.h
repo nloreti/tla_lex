@@ -71,8 +71,19 @@ int addTerminalSymbols(char *);
 int addNonTerminal(char);
 int addNonTerminalSymbols(char *);
 
+
+void eliminateUnreach();
+void eliminateInproductive();
+int isContained(char, char * , int);
+
+void left_eliminateUnitaries();
+void left_normalize();
 int addProduction(char, char, char);
 int addProductionSymbols(char *);
+
+void rotate_productions();
+void right_normalize();
+int isLeft();
 
 //Automata Funciones
 automata * createAutomata();

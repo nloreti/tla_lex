@@ -10,7 +10,9 @@ gramatica_struct * gramatica;
 
 int
 main(){	
-	int err;
+	int err,pid;
+	FILE * file;
+	
 	err = createGramatica();
 	if (err == 0){
 		printf("Hubo un error creando la gramatica");
@@ -23,18 +25,289 @@ main(){
 	addTerminalSymbols("{A,B,C}");
 	addNonTerminalSymbols("{a,b,c}");
 	addInitialSymbol("A");
-	addProductionSymbols("{ A -> bC|cD, B -> bD, C->C}");
+	addProductionSymbols("{ A -> bB|C, B -> bC|bB, C->c, D->B}");
+//	addProductionSymbols("{ A -> Bb|C, B -> Bb|Cb, C->c}");
 	
 	//Si A->C (Entonces elimino unitarias)
+	
+	eliminateInproductive();
+	
+	eliminateUnreach();
+
+	left_eliminateUnitaries();
+	eliminateUnreach();
 	
 	showTerminalSymbols();
 	showNonTerminalSymbols();
 	showInitialSymbol();
 	showProductionSymbols();
 	
-	FILE * file;
+	
+	if ( isLeft() == 1 ){
+		left_normalize();
+	}else if ( isLeft() == 0){
+		right_normalize();
+	}else{
+		printf("Error en la gramatica\n");
+	}
+	printf("La gramatica es Correcta\n\n");
+			
+	showProductionSymbols();
+	
+	//Armo el Archivo;
 	makeDotFile(file);
+	
+	//Grafico
+	if ( (pid = fork()) < 0 ){
+			perror("fork");
+			exit(1);
+	}
+	if (pid == 0){
+			system("/usr/local/bin/dot -Tpng file.dot -o graph.png");
+			exit(1);
+	}	
 }
+
+int isLeft(){
+	int resp = -1;
+	int k;
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				char sright = gramatica->production_function->productions[k].rightsimbols[1];
+				char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+				if ( (fright >= 'a' && fright <= 'z') && sright != -1 && resp == -1){
+					resp = 1;
+				}else if( (fright >= 'A' && fright <= 'Z') && sright != -1 && resp == -1){
+					resp = 0;
+				}else if( (fright >= 'A' && fright <= 'Z') && sright != -1 && resp == 1){
+						resp = -1;
+						return resp;
+				}else if( (fright >= 'a' && fright <= 'z') && sright != -1 && resp == 0){
+							resp = -1;
+							return resp;
+				}
+			}
+	}
+	
+	return resp;
+}
+
+void right_normalize(){
+	int j,k,i;
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				char sright = gramatica->production_function->productions[k].rightsimbols[1];
+				char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1)){
+					gramatica->production_function->productions[k].rightsimbols[1] = gramatica->production_function->productions[k].rightsimbols[0];
+					gramatica->production_function->productions[k].rightsimbols[0] = 'M';
+				}
+			}
+	}
+	rotate_productions();
+//	addProduction('M','/',-1);
+	
+
+}
+
+void rotate_productions(){
+	int k;
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				char sright = gramatica->production_function->productions[k].rightsimbols[1];
+				char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+				gramatica->production_function->productions[k].leftsimbol = fright;
+				gramatica->production_function->productions[k].rightsimbols[0] = sright;
+				gramatica->production_function->productions[k].rightsimbols[1] = left;
+			}
+	}
+	gramatica->initial = 'M';
+	addProduction('A','\\',-1);
+}
+void left_normalize(){
+	int j,k,i;
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				char sright = gramatica->production_function->productions[k].rightsimbols[1];
+				char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1)){
+					gramatica->production_function->productions[k].rightsimbols[1] = 'M';
+				}
+			}
+	}
+	addProduction('M','\\',-1);
+	
+
+}
+
+void left_eliminateUnitaries(){
+	int i,j,k;
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+		if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			char left = gramatica->production_function->productions[k].leftsimbol;
+			char sright = gramatica->production_function->productions[k].rightsimbols[1];
+			char fright = gramatica->production_function->productions[k].rightsimbols[0];
+		
+			if( fright >= 'A' && fright <= 'Z' && sright == -1){
+				for (j = 0; j < gramatica->production_function->size; j++){
+					if ( gramatica->production_function->productions[j].leftsimbol == fright ){
+						char first_right = gramatica->production_function->productions[j].rightsimbols[0];
+						char scnd_right = gramatica->production_function->productions[j].rightsimbols[1];
+						addProduction(left,first_right,scnd_right);
+					}
+				}
+					//Elimino la unitaria que está demas
+					gramatica->production_function->productions[k].leftsimbol = -1;
+			}
+		
+		}
+	}
+}
+void eliminateUnreach(){
+	int k,j,h;
+	char * old = malloc(sizeof(char)*15);
+	char * new = malloc(sizeof(char)*15);
+	char newSymbol;
+	//i=0;
+	j=0;
+	
+	//old[i++] = gramatica->initial;
+	new[j++] = gramatica->initial;
+	
+		for( h = 0; h < j; h++){
+			newSymbol = new[h];
+			for (k = 0; k < gramatica->production_function->size; k++){
+				if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+					char left = gramatica->production_function->productions[k].leftsimbol;
+					char sright = gramatica->production_function->productions[k].rightsimbols[1];
+					char fright = gramatica->production_function->productions[k].rightsimbols[0];
+
+					if ( left == newSymbol ){
+						if( sright >= 'A' && sright <= 'Z'){
+							if( !isContained(sright,new,j) ){
+								new[j] = sright;
+								j++;
+							}
+						}
+						if( fright >= 'A' && fright <= 'Z'){
+							if( !isContained(fright,new,j) ){
+								new[j] = fright; 
+								j++;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				if ( !isContained(left,new,j) ){
+					gramatica->production_function->productions[k].leftsimbol = -1;
+				}
+			}
+		}
+}
+
+void eliminateInproductive(){
+	int k,j,i;
+	
+	char * new = malloc(sizeof(char)*15);
+	j=0;
+	
+	//Cargo los primeros;
+		for (k = 0; k < gramatica->production_function->size; k++){
+			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				char left = gramatica->production_function->productions[k].leftsimbol;
+				char sright = gramatica->production_function->productions[k].rightsimbols[1];
+				char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1) || fright == '\\'){
+					if ( !isContained(left,new,j) ){
+						new[j] = left;
+						j++;
+					}
+				}
+			}
+		}
+	//Recorro a partir de los primeros para llegar a los que son productivos.	
+	for( i = 0; i<j; i++){
+		char newSymbol = new[i];
+		for (k = 0; k < gramatica->production_function->size; k++){
+				if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+					char left = gramatica->production_function->productions[k].leftsimbol;
+					char sright = gramatica->production_function->productions[k].rightsimbols[1];
+					char fright = gramatica->production_function->productions[k].rightsimbols[0];
+				
+					if ( fright == newSymbol){
+						if ( !isContained(left,new,j)){
+							new[j] = left;
+							j++;
+						}
+					}
+					
+					if ( sright == newSymbol){
+						if ( !isContained(left,new,j)){
+							new[j] = left;
+							j++;
+						}
+					}
+					
+				}
+		}			
+	}
+	
+	//Elimino los que no estan contenidos en new o estan contenidos en inproductivos;
+	char * inproductivos = malloc ( sizeof(char) * 15);
+	int size = 0;
+	for ( k = 0; k < gramatica->terminals->size; k++){
+		if ( !isContained(gramatica->terminals->terminal[k], new, j) ){
+			inproductivos[size] = gramatica->terminals->terminal[k];
+			size++;
+		}
+	}
+	
+	for (k = 0; k < gramatica->production_function->size; k++){
+		if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			char left = gramatica->production_function->productions[k].leftsimbol;
+			char sright = gramatica->production_function->productions[k].rightsimbols[1];
+			char fright = gramatica->production_function->productions[k].rightsimbols[0];
+			
+			if ( (isContained(fright,inproductivos,size) || isContained(sright,inproductivos, size) || isContained(left,inproductivos,size)) ){
+				gramatica->production_function->productions[k].leftsimbol = -1;
+			}
+		}
+	}	
+	
+}
+
+int isContained(char left, char * new, int size){
+	int i;
+	
+	for ( i = 0; i < size; i++){
+		if ( left == new[i]){
+			return 1;
+		}
+	}
+	
+	return 0;
+	
+}
+
 
 void makeDotFile(FILE * file){
 	int i,j,k;
@@ -43,36 +316,53 @@ void makeDotFile(FILE * file){
 	//Insertar lineas.
 	fputs("digraph{\n",file);
 	//Inserta no terminales
-	for (i = 0; i < gramatica->nonterminals->size; i++){
+	i=0;
+	for (j = 0; j < gramatica->production_function->size; j++){
+		if ( gramatica->production_function->productions[j].leftsimbol != -1 &&  gramatica->production_function->productions[j].rightsimbols[0] != '\\'){
+		
 		fputs("node[shape=circle] ",file);
-		fputc( gramatica->nonterminals->nonterminals[i],file);
+		fputc( gramatica->production_function->productions[j].leftsimbol,file);
 		fputs(" [label=\"",file);
 		fputc((char)i+'0',file);
-		fputs("\"];\n",file);		
+		fputs("\"];\n",file);
+		i++;
+		}	
 	}
-	//terminales
-	for (j = 0; j < gramatica->terminals->size; j++, i++){
-	
+	//Pongo los finales 
+	for (j = 0; j < gramatica->production_function->size; j++){
+		if ( gramatica->production_function->productions[j].leftsimbol != -1 &&  gramatica->production_function->productions[j].rightsimbols[0] == '\\'){
+		
 		fputs("node[shape=doublecircle] ",file);
-		fputc( gramatica->terminals->terminal[j],file);
+		fputc( gramatica->production_function->productions[j].leftsimbol,file);
 		fputs(" [label=\"",file);
 		fputc((char)i+'0',file);
-		fputs("\"];\n",file);		
+		fputs("\"];\n",file);
+		i++;
+		}	
 	}
+//	fputs("node[shape=doublecircle] ",file);
+//	fputc('M',file);
+//	fputs(" [label=\"",file);
+//	fputc((char)i+'0',file);
+//	fputs("\"];\n",file);
+	
 	
 	//Transiciones
-	for (k = 0; k < gramatica->production_function->size; k++, i++){
-	
-		char left = gramatica->production_function->productions[k].leftsimbol;
-		char right = gramatica->production_function->productions[k].rightsimbols[1];
-		char label = gramatica->production_function->productions[k].rightsimbols[0];
-		fputc(left,file);
-		fputs("->",file);
-		fputc(right,file);
-		fputs(" [label=\"",file);
-		fputc(label,file);
-		fputs("\"];\n",file);		
+	for (k = 0; k < gramatica->production_function->size; k++){
+		if ( gramatica->production_function->productions[k].leftsimbol != -1 &&  gramatica->production_function->productions[k].rightsimbols[0] != '\\'){
+			char left = gramatica->production_function->productions[k].leftsimbol;
+			char right = gramatica->production_function->productions[k].rightsimbols[1];
+			char label = gramatica->production_function->productions[k].rightsimbols[0];
+			fputc(left,file);
+			fputs("->",file);
+			fputc(right,file);
+			fputs(" [label=\"",file);
+			fputc(label,file);
+			fputs("\"];\n",file);	
+			i++;	
+		}
 	}
+	fputs("}\n",file);
 	
 	return;
 	
