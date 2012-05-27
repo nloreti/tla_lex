@@ -1,0 +1,1 @@
+G1 = ({A, B, C}, {a, b},A, { A -> aA|aB, B -> cC, C->bC|b}) 
