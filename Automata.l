@@ -26,10 +26,10 @@ char lastRightLabel=0;
 %x ENDDEFINITION
 
 %%
-
 \n ;
 . ;
-<PARSE,INITIAL,LEFTTRANSITION>\/\/.+ ;
+<PARSE,INITIAL,LEFTTRANSITION>\/\/.+\n? ;
+<PARSE,INITIAL,LEFTTRANSITION>\n ;
 <PARSE,INITIAL>node\[shape=doublecircle\] {final=1;};BEGIN(NODE);
 <PARSE,INITIAL>node\[shape=circle\] {final=0;};BEGIN(NODE);
 <NODE>([A-Z]|[a-z]|[0-9])+ {insertNode(yytext,yyleng);}; BEGIN(STARTLABEL);
@@ -37,16 +37,17 @@ char lastRightLabel=0;
 <GETLABEL>([a-z]|[A-z]|[0-9]) {getLabel(*yytext);};BEGIN(ENDLABEL);
 <ENDLABEL>\"\]; BEGIN(PARSE);
 
-<PARSE,LEFTTRANSITION>([A-Z]|[a-z]|[0-9])+ {getTransitionLeftPart(yytext);}BEGIN(ARROW);
+<PARSE,LEFTTRANSITION>([A-Za-z0-9])+ {getTransitionLeftPart(yytext);}BEGIN(ARROW);
 <ARROW>-> BEGIN(RIGHTTRANSITION);
 <RIGHTTRANSITION>([A-Z]|[a-z]|[0-9])+ {getTransitionRightPart(yytext);}BEGIN(STARTLABELTRANSITION);
 <STARTLABELTRANSITION>\[label=\" BEGIN(GETLABELTRANSITION);
+<STARTLABELTRANSITION>[^((\[label=\")|" "|\t|\n)] {printf("BAD FORMAT\n"); exit(1);}
 <GETLABELTRANSITION>([a-z]|\\\\) {getLabelTransition(*yytext);}BEGIN(LABELSEPARATOR);
 <LABELSEPARATOR>\/ BEGIN(GETANOTHERLABELTRANSITION);
 <GETANOTHERLABELTRANSITION>([a-z]|\\\\) {createNewTransition(lastLeftLabel,lastRightLabel,*yytext);}BEGIN(LABELSEPARATOR);
 <LABELSEPARATOR>\"\]\; BEGIN(LEFTTRANSITION);
 
-<LEFTTRANSITION>\} BEGIN(ENDDEFINITION);
+<LEFTTRANSITION>\}\n? BEGIN(ENDDEFINITION);
 
 %%
 
