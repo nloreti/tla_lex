@@ -71,12 +71,6 @@ FILE * file;
 	createGramatica();	
 	yylex();
 	
-	showTerminalSymbols();
-	showNonTerminalSymbols();
-	showInitialSymbol();
-	showProductionSymbols();
-	
-	//Aca empiezo
 	eliminateInproductive();
 	eliminateUnreach();
 	left_eliminateUnitaries();
