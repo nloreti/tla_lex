@@ -85,9 +85,14 @@ void rotate_productions();
 void right_normalize();
 int isLeft();
 
+int addTerminals(char *);
+int addNonTermianls(char *);
+int addProduction(char *);
+
 //Automata Funciones
 automata * createAutomata();
 
+void reportError(char* msg,char* error);
 
 void showTerminalSymbols();
 void showNonTerminalSymbols();

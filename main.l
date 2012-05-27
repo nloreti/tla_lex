@@ -6,10 +6,42 @@
 
 gramatica_struct * gramatica;
 %} 
-%x	PALABRA
-MINUSCULA	[a-z]
-MAYUSCULA	[A-Z]
+%x DEFINITION
+%x TERMINALS
+%x ENDTERMINALS
+%x NONTERMINALS
+%x ENDNONTERMINALS
+%x INITIALS
+%x ENDINITIALS
+%x PRODUCTIONS
+%x ENDPRODUCTIONS
+%x ENDDEFINITION
+%x TERMSEPARATOR
+%x NONTERMSEPARATOR
+%x PRODSEPARATOR
+
 %%
+
+\( BEGIN(DEFINITION);
+<DEFINITION>\{ ;BEGIN(TERMINALS);
+<TERMINALS>[^(,|}|" ")] {printf("el terminal es %s\n",yytext);}BEGIN(TERMSEPARATOR);
+<TERMSEPARATOR>[^(,|" "|\t|\})] {reportError("terminales",yytext);};
+<TERMSEPARATOR>, BEGIN(TERMINALS);
+<TERMINALS,TERMSEPARATOR>\} BEGIN(ENDTERMINALS);
+<ENDTERMINALS>\{ BEGIN(NONTERMINALS);
+<NONTERMINALS>[^(,|}|" ")] {printf("el no terminal es %s\n",yytext);}BEGIN(NONTERMSEPARATOR);
+<NONTERMSEPARATOR>[^(,|" "|\t|\})] {reportError("no terminales", yytext);};
+<NONTERMSEPARATOR>, BEGIN(NONTERMINALS);
+<NONTERMINALS,NONTERMSEPARATOR>\} BEGIN(ENDNONTERMINALS);
+<ENDNONTERMINALS>, ;BEGIN(INITIALS);
+<INITIALS>[^(" "|,|\n|\t)] {printf("El inicial es %s\n",yytext);};
+<INITIALS>, ;BEGIN(ENDINITIALS);
+<ENDINITIALS>\{ BEGIN(PRODUCTIONS);
+<PRODUCTIONS>([A-Z]" "?)->(" "?((\\|([a-z]|[A-Z])+)" "?\|" "?)*(" "?\\|([a-z]|[A-Z])+)" "?) {printf("la produccion es %s\n",yytext);} BEGIN(PRODSEPARATOR);
+<PRODSEPARATOR>, BEGIN(PRODUCTIONS);
+<PRODSEPARATOR>[^(,|" "|\t|\})] {reportError("producciones", yytext);};
+<PRODUCTIONS,PRODSEPARATOR>\} BEGIN(ENDPRODUCTIONS);
+<ENDPRODUCTIONS>\) BEGIN(ENDDEFINITION);
 . ;
 \n ;
 
@@ -19,18 +51,13 @@ int
 main(int argc, char* argv[]){
 	FILE* fileToOpen= fopen(argv[1], "r");
 	if(fileToOpen== NULL)
-		printf("Error al abrir el archivo");
+		printf("Error al abrir el archivo\n");
 	
 	yyin=fileToOpen;
 	
-	createGramatica();
-	gramatica->production_function->size = 1;
-	printf("La cantidad es: %d \n",gramatica->production_function->size);
-	gramatica->terminals;
-	gramatica->nonterminals;
-	
+	createGramatica();	
 	yylex();
-//	printf("la cantidad de caracteres es %d \n",contador);
+
 }
 
 
@@ -68,3 +95,10 @@ int initializeTerminals(){
 	gramatica->terminals->size=0;
 	return 1;
 }
+void reportError(char* errorMsg, char* token){
+
+	printf("Se produjo un error tratando de leer %s cuando se leyo %s",errorMsg,token);
+	abort();
+
+}
+ 
