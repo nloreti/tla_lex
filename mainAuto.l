@@ -23,16 +23,19 @@ char lastRightLabel=0;
 %x GETLABELTRANSITION
 %x LABELSEPARATOR
 %x GETANOTHERLABELTRANSITION
+%x ENDDEFINITION
 
 %%
 
+\n ;
+. ;
 <PARSE,INITIAL,LEFTTRANSITION>\/\/.+ ;
 <PARSE,INITIAL>node\[shape=doublecircle\] {final=1;};BEGIN(NODE);
 <PARSE,INITIAL>node\[shape=circle\] {final=0;};BEGIN(NODE);
 <NODE>([A-Z]|[a-z]|[0-9])+ {insertNode(yytext,yyleng);}; BEGIN(STARTLABEL);
 <STARTLABEL>\[label=\" BEGIN(GETLABEL);
 <GETLABEL>([a-z]|[A-z]|[0-9]) {getLabel(*yytext);};BEGIN(ENDLABEL);
-<ENDLABEL>\"\] ; BEGIN(PARSE);
+<ENDLABEL>\"\]; BEGIN(PARSE);
 
 <PARSE,LEFTTRANSITION>([A-Z]|[a-z]|[0-9])+ {getTransitionLeftPart(yytext);}BEGIN(ARROW);
 <ARROW>-> BEGIN(RIGHTTRANSITION);
@@ -43,8 +46,7 @@ char lastRightLabel=0;
 <GETANOTHERLABELTRANSITION>([a-z]|\\\\) {createNewTransition(lastLeftLabel,lastRightLabel,*yytext);}BEGIN(LABELSEPARATOR);
 <LABELSEPARATOR>\"\]\; BEGIN(LEFTTRANSITION);
 
-. ;
-\n ;
+<LEFTTRANSITION>\} BEGIN(ENDDEFINITION);
 
 %%
 
@@ -77,6 +79,7 @@ main(int argc, char* argv[]){
 	showNodes();
 	showFinals();
 	showTransitions();
+	showLenguage();
 }
 
 
@@ -89,7 +92,8 @@ char getLabelForTrans(char* name){
 		if(strcmp(name,automata->nodes->nodes[i]->name)==0){
 			
 			return automata->nodes->nodes[i]->label;
-	}	}
+		}	
+	}
 	return 0;
 
 }
@@ -133,7 +137,37 @@ int getLabelTransition(char c){
 	automata->delta->delta[size]->transition=c;
 	
 	automata->delta->size=size+1;
+	
+	addLabelToLenguage(c);
 	return 1;
+}
+
+int addLabelToLenguage(char c){
+	if(c == '\\')
+		return 1;
+	if(!labelExist(c))
+		addLabel(c);	
+	return 1;
+}
+
+int addLabel(char c){
+	int size=automata->language->size;
+	if(size%BLOCK ==0)
+		automata->language->language=realloc(automata->language->language,(size+BLOCK)*sizeof(char));
+	automata->language->language[size]=c;
+	
+	automata->language->size=size+1;
+
+}
+
+int labelExist(char c){
+	int i=0;
+	for(i;i<automata->language->size;i++){
+		if(automata->language->language[i] == c){
+		return 1;
+		}
+	}
+	return 0;
 }
 
 int insertNode(char* name, int lenght){
@@ -243,6 +277,18 @@ void showTransitions(){
 	for(i=0; i<automata->delta->size; i++){
 		printf("%c -> %c (%c) \n",automata->delta->delta[i]->initialnode,automata->delta->delta[i]->finalnode,automata->delta->delta[i]->transition);
 	}
+
+}
+
+void showLenguage(){
+	int i=0;
+	printf("----------------LENGUAGE----------------\n");
+	printf("Hay %d elementos en el Lenguaje\n",automata->language->size);
+
+	for(i=0; i<automata->language->size; i++){
+		printf("%c  ",automata->language->language[i]);
+	}
+	printf("\n");
 
 }
 	

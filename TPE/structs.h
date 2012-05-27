@@ -112,6 +112,10 @@ int getLabelTransition(char c);
 void showTransitions();
 void reportError(char* msg,char* error);
 int createNewTransition(char leftLabel,char rightLabel, char transition);
+int addLabel(char c);
+int labelExist(char c);
+int addLabelToLenguage(char c);
+void showLenguage();
 
 
 
