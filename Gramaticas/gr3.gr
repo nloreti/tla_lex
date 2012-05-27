@@ -1,5 +1,1 @@
-
-G3 = ({A,B,C,D},
-	{a, b, c},
-	A,
-	{A->Ba | c, B->Cb | \, C ->Db | \, D->Da | C})
+G1 = ({A, B, C}, {a, b, c},A, { A -> bB|C, B -> bC|bB, C->c, D->B}) 

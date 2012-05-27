@@ -95,7 +95,8 @@ FILE * file;
 	}else if ( isLeft() == 0){
 		right_normalize();
 	}else{
-		printf("Error en la gramatica\n");
+		printf("Error en la gramatica, no corresponde a ningún tipo conocido\n");
+		return 0;
 	}
 	printf("La gramatica es Correcta\n\n");
 			
