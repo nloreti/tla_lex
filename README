@@ -1,0 +1,12 @@
+
+1)Ejecutar el archivo makefile
+	$>make
+
+2)El programa necesita que se le pase dos argumentos por linea de comandos , el primero corresponde a el 
+path del archivo sobre el cual se quiere trabajar, y el segundo es el directorio en el cual trabaja dot 
+(se puede averiguar ejecutando which dot)
+
+	Ejemplo: $>./TPTLA gr3.gr /usr/bin/dot
+
+El programa debe ser ejecutado en un ambiente linux ya que hace uso de las directivas fork() y execv() 
+entre otras
