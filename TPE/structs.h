@@ -36,13 +36,20 @@ typedef struct{
 }gramatica_struct;
 
 //AUTOMATA
+
 typedef struct{
-	char * nodos;
+	char label;
+	char* name;
+}node_struct;
+
+typedef struct{
+	node_struct** nodes;
 	int size;
-}nonfinals_struct;
+}nodes_struct;
+
 	
 typedef struct{
-	char * nodos;
+	char * nodes;
 	int size;
 }finals_struct;
 
@@ -57,13 +64,17 @@ typedef struct{
 	char transition;
 }statechange_struct;
 
-
 typedef struct{
-	nonfinals_struct * nonfinals;
+	statechange_struct ** delta;
+	int size;
+	}delta_struct;
+	
+typedef struct{
+	nodes_struct * nodes;
 	finals_struct * finals;
 	language_struct * language;
 	char initial;
-	statechange_struct ** delta;	
+	delta_struct * delta;	
 }automata_struct;
 
 
@@ -85,10 +96,22 @@ void showNonTerminalSymbols();
 void showTerminalSymbols();
 
 //Automata Funciones
-void createAutomata();
-
+int createAutomata();
+int initializeNodes();
+int initilizeFinals();
+int initializeLanguage();
+int initializeDelta();
+int insertFinal(char c);
+int getLabel(char c);
+int insertNode(char* name, int lenght);
+void showNodes();
+void showFinals();
+int getTransitionLeftPart(char* c);
+int getTransitionRightPart(char* c);
+int getLabelTransition(char c);
+void showTransitions();
 void reportError(char* msg,char* error);
-
+int createNewTransition(char leftLabel,char rightLabel, char transition);
 
 
 
