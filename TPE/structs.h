@@ -102,7 +102,7 @@ int addTerminal(char c);
 int addNonTerminal(char c);
 int addInitialSymbol(char c);
 void addInitialSymbols(char * c);
-int addProduction(char c);
+
 void getProductionLeftPart(char c);
 int getProduction(char* c,int lenght);
 void showProductionSymbols();

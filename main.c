@@ -24,7 +24,7 @@ main(){
 
 	addTerminalSymbols("{A,B,C}");
 	addNonTerminalSymbols("{a,b,c}");
-	addInitialSymbol("A");
+	addInitialSymbols("A");
 	addProductionSymbols("{ A -> bB|C, B -> bC|bB, C->c, D->B}");
 //	addProductionSymbols("{ A -> Bb|C, B -> Bb|Cb, C->c}");
 	
@@ -111,7 +111,7 @@ void right_normalize(){
 			}
 	}
 	rotate_productions();
-//	addProduction('M','/',-1);
+//	addProductions('M','/',-1);
 	
 
 }
@@ -131,7 +131,7 @@ void rotate_productions(){
 			}
 	}
 	gramatica->initial = 'M';
-	addProduction('A','\\',-1);
+	addProductions('A','\\',-1);
 }
 void left_normalize(){
 	int j,k,i;
@@ -147,7 +147,7 @@ void left_normalize(){
 				}
 			}
 	}
-	addProduction('M','\\',-1);
+	addProductions('M','\\',-1);
 	
 
 }
@@ -166,7 +166,7 @@ void left_eliminateUnitaries(){
 					if ( gramatica->production_function->productions[j].leftsimbol == fright ){
 						char first_right = gramatica->production_function->productions[j].rightsimbols[0];
 						char scnd_right = gramatica->production_function->productions[j].rightsimbols[1];
-						addProduction(left,first_right,scnd_right);
+						addProductions(left,first_right,scnd_right);
 					}
 				}
 					//Elimino la unitaria que está demas
@@ -368,7 +368,7 @@ void makeDotFile(FILE * file){
 	
 }
 
-void addInitialSymbol(char * c){
+void addInitialSymbols(char * c){
 	gramatica->initial = *c;
 }
 
@@ -440,11 +440,11 @@ int addProductionSymbols(char * string){
 					sright = string[i];
 				}
 			}else if ( string[i] == '|' || string[i] == '}' ){
-				addProduction(left,fright,sright);
+				addProductions(left,fright,sright);
 				fright = -1;
 				sright = -1;
 			}else if ( string[i] == ','){
-				addProduction(left,fright,sright);
+				addProductions(left,fright,sright);
 				flag = 0;
 				fright = -1;
 				sright = -1;
@@ -460,7 +460,7 @@ int addProductionSymbols(char * string){
 }
 
 
-int addProduction(char leftside, char rightside1, char rightside2){
+int addProductions(char leftside, char rightside1, char rightside2){
 	int size = gramatica->production_function->size;
 	gramatica->production_function->productions[size].leftsimbol = leftside;
 	gramatica->production_function->productions[size].rightsimbols[0] = rightside1;
