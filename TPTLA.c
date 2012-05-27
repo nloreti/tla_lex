@@ -14,15 +14,15 @@ main(int argc, char* argv[]){
 		pid=fork();
 		if(pid==0)
 			execv("automata", argv);
-		else
-			wait();
+		//else
+		//	wait();
 	}
 	else if((occur=strstr(file,".gr"))!=NULL){
 		pid=fork();
 		if(pid==0)
 			execv("gramatica",argv);
-		else
-			wait();
+	//	else
+	//		wait();
 	}
 	else
 		printf("El archivo no es ni .gr ni .dot\n");

@@ -25,7 +25,9 @@ main(){
 	addTerminalSymbols("{A,B,C}");
 	addNonTerminalSymbols("{a,b,c}");
 	addInitialSymbols("A");
-	addProductionSymbols("{ A -> bB|C, B -> bC|bB, C->c, D->B}");
+
+	addProductionSymbols("{A -> aB|c, B -> aA|b}");
+//	addProductionSymbols("{ A -> bB|C, B -> bC|bB, C->c, D->B}");
 //	addProductionSymbols("{ A -> Bb|C, B -> Bb|Cb, C->c}");
 	
 	//Si A->C (Entonces elimino unitarias)
@@ -73,7 +75,7 @@ int isLeft(){
 	int k;
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
@@ -99,12 +101,12 @@ void right_normalize(){
 	int j,k,i;
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
 			
-				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1)){
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == 0)){
 					gramatica->production_function->productions[k].rightsimbols[1] = gramatica->production_function->productions[k].rightsimbols[0];
 					gramatica->production_function->productions[k].rightsimbols[0] = 'M';
 				}
@@ -120,7 +122,7 @@ void rotate_productions(){
 	int k;
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
@@ -131,23 +133,23 @@ void rotate_productions(){
 			}
 	}
 	gramatica->initial = 'M';
-	addProductions('A','\\',-1);
+	addProductions('A','\\',0);
 }
 void left_normalize(){
 	int j,k,i;
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
 			
-				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1)){
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == 0)){
 					gramatica->production_function->productions[k].rightsimbols[1] = 'M';
 				}
 			}
 	}
-	addProductions('M','\\',-1);
+	addProductions('M','\\',0);
 	
 
 }
@@ -156,12 +158,12 @@ void left_eliminateUnitaries(){
 	int i,j,k;
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-		if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+		if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 			char left = gramatica->production_function->productions[k].leftsimbol;
 			char sright = gramatica->production_function->productions[k].rightsimbols[1];
 			char fright = gramatica->production_function->productions[k].rightsimbols[0];
 		
-			if( fright >= 'A' && fright <= 'Z' && sright == -1){
+			if( fright >= 'A' && fright <= 'Z' && sright == 0){
 				for (j = 0; j < gramatica->production_function->size; j++){
 					if ( gramatica->production_function->productions[j].leftsimbol == fright ){
 						char first_right = gramatica->production_function->productions[j].rightsimbols[0];
@@ -170,7 +172,7 @@ void left_eliminateUnitaries(){
 					}
 				}
 					//Elimino la unitaria que está demas
-					gramatica->production_function->productions[k].leftsimbol = -1;
+					gramatica->production_function->productions[k].leftsimbol = 0;
 			}
 		
 		}
@@ -190,7 +192,7 @@ void eliminateUnreach(){
 		for( h = 0; h < j; h++){
 			newSymbol = new[h];
 			for (k = 0; k < gramatica->production_function->size; k++){
-				if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 					char left = gramatica->production_function->productions[k].leftsimbol;
 					char sright = gramatica->production_function->productions[k].rightsimbols[1];
 					char fright = gramatica->production_function->productions[k].rightsimbols[0];
@@ -214,10 +216,10 @@ void eliminateUnreach(){
 		}
 		
 		for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				if ( !isContained(left,new,j) ){
-					gramatica->production_function->productions[k].leftsimbol = -1;
+					gramatica->production_function->productions[k].leftsimbol = 0;
 				}
 			}
 		}
@@ -231,12 +233,12 @@ void eliminateInproductive(){
 	
 	//Cargo los primeros;
 		for (k = 0; k < gramatica->production_function->size; k++){
-			if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+			if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 				char left = gramatica->production_function->productions[k].leftsimbol;
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
 			
-				if ( ( (fright >= 'a' && fright <= 'z') && sright == -1) || fright == '\\'){
+				if ( ( (fright >= 'a' && fright <= 'z') && sright == 0) || fright == '\\'){
 					if ( !isContained(left,new,j) ){
 						new[j] = left;
 						j++;
@@ -248,7 +250,7 @@ void eliminateInproductive(){
 	for( i = 0; i<j; i++){
 		char newSymbol = new[i];
 		for (k = 0; k < gramatica->production_function->size; k++){
-				if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+				if ( gramatica->production_function->productions[k].leftsimbol != 0 ){
 					char left = gramatica->production_function->productions[k].leftsimbol;
 					char sright = gramatica->production_function->productions[k].rightsimbols[1];
 					char fright = gramatica->production_function->productions[k].rightsimbols[0];
@@ -282,13 +284,13 @@ void eliminateInproductive(){
 	}
 	
 	for (k = 0; k < gramatica->production_function->size; k++){
-		if ( gramatica->production_function->productions[k].leftsimbol != -1 ){
+		if ( gramatica->production_function->productions[k].leftsimbol != 0){
 			char left = gramatica->production_function->productions[k].leftsimbol;
 			char sright = gramatica->production_function->productions[k].rightsimbols[1];
 			char fright = gramatica->production_function->productions[k].rightsimbols[0];
 			
 			if ( (isContained(fright,inproductivos,size) || isContained(sright,inproductivos, size) || isContained(left,inproductivos,size)) ){
-				gramatica->production_function->productions[k].leftsimbol = -1;
+				gramatica->production_function->productions[k].leftsimbol = 0;
 			}
 		}
 	}	
@@ -318,7 +320,7 @@ void makeDotFile(FILE * file){
 	//Inserta no terminales
 	i=0;
 	for (j = 0; j < gramatica->production_function->size; j++){
-		if ( gramatica->production_function->productions[j].leftsimbol != -1 &&  gramatica->production_function->productions[j].rightsimbols[0] != '\\'){
+		if ( gramatica->production_function->productions[j].leftsimbol != 0 &&  gramatica->production_function->productions[j].rightsimbols[0] != '\\'){
 		
 		fputs("node[shape=circle] ",file);
 		fputc( gramatica->production_function->productions[j].leftsimbol,file);
@@ -330,7 +332,7 @@ void makeDotFile(FILE * file){
 	}
 	//Pongo los finales 
 	for (j = 0; j < gramatica->production_function->size; j++){
-		if ( gramatica->production_function->productions[j].leftsimbol != -1 &&  gramatica->production_function->productions[j].rightsimbols[0] == '\\'){
+		if ( gramatica->production_function->productions[j].leftsimbol != 0 &&  gramatica->production_function->productions[j].rightsimbols[0] == '\\'){
 		
 		fputs("node[shape=doublecircle] ",file);
 		fputc( gramatica->production_function->productions[j].leftsimbol,file);
@@ -349,7 +351,7 @@ void makeDotFile(FILE * file){
 	
 	//Transiciones
 	for (k = 0; k < gramatica->production_function->size; k++){
-		if ( gramatica->production_function->productions[k].leftsimbol != -1 &&  gramatica->production_function->productions[k].rightsimbols[0] != '\\'){
+		if ( gramatica->production_function->productions[k].leftsimbol != 0 &&  gramatica->production_function->productions[k].rightsimbols[0] != '\\'){
 			char left = gramatica->production_function->productions[k].leftsimbol;
 			char right = gramatica->production_function->productions[k].rightsimbols[1];
 			char label = gramatica->production_function->productions[k].rightsimbols[0];
@@ -367,6 +369,8 @@ void makeDotFile(FILE * file){
 	return;
 	
 }
+
+
 
 void addInitialSymbols(char * c){
 	gramatica->initial = *c;
@@ -426,28 +430,28 @@ int addProductionSymbols(char * string){
 	
 	int i;
 	int flag;
-	char left = -1;
-	char fright = -1;
-	char sright = -1;
+	char left = 0;
+	char fright = 0;
+	char sright = 0;
 	
 	flag = 0;
 	for(i=0; string[i] != '\0' && string[i] != '\n'; i++){
 		if(flag){
 			if( (string[i] >= 'a' && string[i] <= 'z') || (string [i] >= 'A' && string[i] <= 'Z') ){
-				if ( fright == -1 ){
+				if ( fright == 0 ){
 					fright = string[i];
 				}else{
 					sright = string[i];
 				}
 			}else if ( string[i] == '|' || string[i] == '}' ){
 				addProductions(left,fright,sright);
-				fright = -1;
-				sright = -1;
+				fright = 0;
+				sright = 0;
 			}else if ( string[i] == ','){
 				addProductions(left,fright,sright);
 				flag = 0;
-				fright = -1;
-				sright = -1;
+				fright = 0;
+				sright = 0;
 			}
 		}
 		if( (string [i] >= 'A' && string[i] <= 'Z') && !flag ){
