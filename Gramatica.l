@@ -105,7 +105,7 @@ FILE * file;
 			exit(1);
 	}
 	if (pid == 0){
-			system("/usr/local/bin/dot -Tpng file.dot -o graph.png");
+			system(strcat(argv[2]," -Tpng file.dot -o graph.png"));
 			exit(1);
 	}
 }
