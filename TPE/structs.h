@@ -1,4 +1,5 @@
 #define BLOCK 10
+#import <stdio.h>
 
 //GRAFMATICA
 
