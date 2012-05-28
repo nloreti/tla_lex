@@ -344,9 +344,9 @@ void afdToGr(){
 			//printf("GetState%d: %c\tGetSymbol%d: %c -> %c\n", i, au_getState(i), j, au_getSymbol(j), au_move(au_getState(i), au_getSymbol(j)));
 			if( (aux = au_move(au_getState(i), au_getSymbol(j))) != 0 ){
 				//printf("Adding %c->%c%c\n",au_getState(i), au_getSymbol(j), toupper(aux));
-				gr_addProduction(toupper(au_getState(i) + 'A'), au_getSymbol(j), toupper(aux + 'A'));
+				gr_addProduction(toupper(au_getState(i) + 'A' - '0'), au_getSymbol(j), toupper(aux + 'A' - '0'));
 				if( au_isFinal(aux) ){
-					gr_addProduction(toupper(au_getState(i) + 'A'), au_getSymbol(j), '\\');
+					gr_addProduction(toupper(au_getState(i) + 'A' - '0'), au_getSymbol(j), '\\');
 				}
 			}
 		}
@@ -488,7 +488,7 @@ char* gr_printNonTerminalSymbols(){
 	int i, j = 0;
 	char * string = malloc(gr->nonterminals->size *2 * sizeof(char));
 	for( i = 0; i<gr->nonterminals->size; i++){
-		string[j++] = gr->nonterminals->nonterminals[i];
+		string[j++] = toupper(gr->nonterminals->nonterminals[i] + 'A' - '0');
 		string[j++] = ',';
 	}
 	string[j-1] = 0;
