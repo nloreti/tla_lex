@@ -344,9 +344,9 @@ void afdToGr(){
 			//printf("GetState%d: %c\tGetSymbol%d: %c -> %c\n", i, au_getState(i), j, au_getSymbol(j), au_move(au_getState(i), au_getSymbol(j)));
 			if( (aux = au_move(au_getState(i), au_getSymbol(j))) != 0 ){
 				//printf("Adding %c->%c%c\n",au_getState(i), au_getSymbol(j), toupper(aux));
-				gr_addProduction(au_getState(i), au_getSymbol(j), toupper(aux));
+				gr_addProduction(toupper(au_getState(i) + 'A'), au_getSymbol(j), toupper(aux + 'A'));
 				if( au_isFinal(aux) ){
-					gr_addProduction(au_getState(i), au_getSymbol(j), '\\');
+					gr_addProduction(toupper(au_getState(i) + 'A'), au_getSymbol(j), '\\');
 				}
 			}
 		}
@@ -485,11 +485,25 @@ char au_getInitial(){
 
 
 char* gr_printNonTerminalSymbols(){
-	return gr->nonterminals->nonterminals;
+	int i, j = 0;
+	char * string = malloc(gr->nonterminals->size *2 * sizeof(char));
+	for( i = 0; i<gr->nonterminals->size; i++){
+		string[j++] = gr->nonterminals->nonterminals[i];
+		string[j++] = ',';
+	}
+	string[j-1] = 0;
+	return string;
 }
 
 char* gr_printTerminalSymbols(){
-	return gr->terminals->terminal;
+	int i, j = 0;
+	char * string = malloc(gr->terminals->size *2 * sizeof(char));
+	for( i = 0; i<gr->terminals->size; i++){
+		string[j++] = gr->terminals->terminal[i];
+		string[j++] = ',';
+	}
+	string[j-1] = 0;
+	return string;
 }
 
 char* gr_printProductions(){
