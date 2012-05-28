@@ -83,9 +83,10 @@ main(int argc, char* argv[]){
 	showFinals();
 	showTransitions();
 	showLenguage();
-	afdToGr();
 	gr_init();
+	afdToGr();
 	gr_print();
+	gr_toFile();
 }
 
 
