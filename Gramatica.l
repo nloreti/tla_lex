@@ -71,24 +71,10 @@ FILE * file;
 	createGramatica();	
 	yylex();
 	
-	showTerminalSymbols();
-	showNonTerminalSymbols();
-	showInitialSymbol();
-	showProductionSymbols();
-	
-	//Aca empiezo
 	eliminateInproductive();
-	
 	eliminateUnreach();
-
 	left_eliminateUnitaries();
 	eliminateUnreach();
-	
-	showTerminalSymbols();
-	showNonTerminalSymbols();
-	showInitialSymbol();
-	showProductionSymbols();
-	
 	
 	if ( isLeft() == 1 ){
 		left_normalize();
@@ -98,8 +84,10 @@ FILE * file;
 		printf("Error en la gramatica, no corresponde a ningún tipo conocido\n");
 		return 0;
 	}
-	printf("La gramatica es Correcta\n\n");
-			
+	printf("La gramatica es Correcta\n\n");		
+	showTerminalSymbols();
+	showNonTerminalSymbols();
+	showInitialSymbol();
 	showProductionSymbols();
 	
 	//Armo el Archivo;
@@ -134,14 +122,14 @@ int isLeft(){
 				char sright = gramatica->production_function->productions[k].rightsimbols[1];
 				char fright = gramatica->production_function->productions[k].rightsimbols[0];
 			
-				if ( (fright >= 'a' && fright <= 'z') && sright != -1 && resp == -1){
+				if ( (fright >= 'a' && fright <= 'z') && sright != 0 && resp == -1){
 					resp = 1;
-				}else if( (fright >= 'A' && fright <= 'Z') && sright != -1 && resp == -1){
+				}else if( (fright >= 'A' && fright <= 'Z') && sright != 0 && resp == -1){
 					resp = 0;
-				}else if( (fright >= 'A' && fright <= 'Z') && sright != -1 && resp == 1){
+				}else if( (fright >= 'A' && fright <= 'Z') && sright != 0 && resp == 1){
 						resp = -1;
 						return resp;
-				}else if( (fright >= 'a' && fright <= 'z') && sright != -1 && resp == 0){
+				}else if( (fright >= 'a' && fright <= 'z') && sright != 0 && resp == 0){
 							resp = -1;
 							return resp;
 				}
@@ -367,17 +355,30 @@ int isContained(char left, char * new, int size){
 
 void makeDotFile(FILE * file){
 	int i,j,k;
+	char * aux = malloc(gramatica->production_function->size * sizeof(char));
+	int auxSize = 0;
 	//Crear el archivo.
-	file=fopen("file.dot","w+");
+	file=fopen("file.dot","w");
+	fseek(file, 0, SEEK_SET);
 	//Insertar lineas.
 	fputs("digraph{\n",file);
 	//Inserta no terminales
 	i=0;
-	for (j = 0; j < gramatica->production_function->size; j++){
-		if ( gramatica->production_function->productions[j].leftsimbol != 0 &&  gramatica->production_function->productions[j].rightsimbols[0] != '\\'){
+	//Inserto Inicial
+	fputs("node[shape=circle] ",file);
+	fputc( gramatica->initial,file);
+	fputs(" [label=\"",file);
+	fputc((char)i+'0',file);
+	fputs("\"];\n",file);
+	i++;
 		
+	for (j = 0; j < gramatica->production_function->size; j++){
+		char leftValue = gramatica->production_function->productions[j].leftsimbol;
+		if ( leftValue != 0 &&  gramatica->production_function->productions[j].rightsimbols[0] != '\\' && leftValue != gramatica->initial && !isContained(leftValue,aux,auxSize)){
+		aux[auxSize] = leftValue;
+		auxSize++;
 		fputs("node[shape=circle] ",file);
-		fputc( gramatica->production_function->productions[j].leftsimbol,file);
+		fputc( leftValue,file);
 		fputs(" [label=\"",file);
 		fputc((char)i+'0',file);
 		fputs("\"];\n",file);
@@ -396,11 +397,6 @@ void makeDotFile(FILE * file){
 		i++;
 		}	
 	}
-//	fputs("node[shape=doublecircle] ",file);
-//	fputc('M',file);
-//	fputs(" [label=\"",file);
-//	fputc((char)i+'0',file);
-//	fputs("\"];\n",file);
 	
 	
 	//Transiciones
@@ -539,7 +535,9 @@ void showProductionSymbols(){
 	int i;
 	printf("Producciones\n");
 	for( i = 0; i < gramatica->production_function->size; i++){
-		printf("%c -> %c%c\n", gramatica->production_function->productions[i].leftsimbol, gramatica->production_function->productions[i].rightsimbols[0],gramatica->production_function->productions[i].rightsimbols[1]);
+		if(gramatica->production_function->productions[i].leftsimbol != 0){
+			printf("%c -> %c%c\n", gramatica->production_function->productions[i].leftsimbol, gramatica->production_function->productions[i].rightsimbols[0],gramatica->production_function->productions[i].rightsimbols[1]);
+		}
 	}
 	printf("End\n\n");
 }
