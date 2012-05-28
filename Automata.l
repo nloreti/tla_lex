@@ -196,6 +196,8 @@ int getLabel(char c){
 	automata->nodes->nodes[pos]->label=c;
 	if(final)
 		insertFinal(c);
+	if(c == '0')
+		automata->initial= c;
 	return 1;
 }	
 
