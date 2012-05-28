@@ -1,0 +1,22 @@
+digraph {
+node[shape=circle] 0 [label="0"];
+node[shape=circle] 1 [label="1"];
+node[shape=doublecircle] 2 [label="2"];
+node[shape=doublecircle] 3 [label="3"];
+node[shape=doublecircle] 4 [label="4"];
+node[shape=doublecircle] 5 [label="5"];
+0->0 [label="a"];
+0->1 [label="b"];
+0->2 [label="c"];
+1->0 [label="a"];
+1->1 [label="b"];
+1->2 [label="c"];
+2->0 [label="a"];
+2->0 [label="b"];
+2->0 [label="c"];
+0->3 [label="d"];
+0->4 [label="e"];
+0->5 [label="f"];
+0->4 [label="g"];
+0->4 [label="h"];
+}
