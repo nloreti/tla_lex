@@ -137,3 +137,22 @@ void showLenguage();
 
 void makeDotFile(FILE * file);
 
+void afdToGr();
+statechange_struct* createStateChange(char, char, char );
+char au_getSymbol(int);
+char au_getInitial();
+char au_getState(int);
+char au_move(char, char);
+char * toUpperCase(char*);
+void auToGr();
+void au_init();
+char* gr_printNonTerminalSymbols();
+char* gr_printTerminalSymbols();
+char* gr_printProductions();
+void gr_addProduction(char leftside, char rightside1, char rightside2);
+void gr_toFile();
+char* au_getStates();
+char* au_getAlphabet();
+int au_isFinal(char);
+void gr_print();
+void gr_init();
