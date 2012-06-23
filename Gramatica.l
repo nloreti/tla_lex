@@ -70,7 +70,7 @@ FILE * file;
 	
 	createGramatica();	
 	yylex();
-	
+	/*
 	eliminateInproductive();
 	eliminateUnreach();
 	left_eliminateUnitaries();
@@ -84,6 +84,7 @@ FILE * file;
 		printf("Error en la gramatica, no corresponde a ningún tipo conocido\n");
 		return 0;
 	}
+	*/
 	printf("La gramatica es Correcta\n\n");		
 	showTerminalSymbols();
 	showNonTerminalSymbols();
@@ -495,9 +496,12 @@ int getProduction(char* c,int lenght){
 	if(size%BLOCK==0)
 		gramatica->production_function->productions=realloc(gramatica->production_function->productions, (size+BLOCK)*sizeof(production_struct));
 	gramatica->production_function->productions[size].leftsimbol=leftPart;
+	
+	gramatica->production_function->productions[size].rightsimbols=malloc(lenght*sizeof(char));
+	
 	for(i=0;i< lenght;i++)
 		gramatica->production_function->productions[size].rightsimbols[i]=c[i];
-	
+	gramatica->production_function->productions[size].rightsimbolslenght=lenght;
 	gramatica->production_function->size=size+1;
 	return 1;
 		

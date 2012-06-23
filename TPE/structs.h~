@@ -1,12 +1,11 @@
 #define BLOCK 10
 #include <stdio.h>
 
-//GRAMATICA
+//GRAFMATICA
 
 typedef struct{
 	char leftsimbol;
-	char* rightsimbols;
-	int rightsimbolslenght;
+	char rightsimbols[2];
 }production_struct;
 
 typedef struct{
@@ -32,7 +31,6 @@ typedef struct{
 	char initial;
 }gramatica_struct;
 
-/*
 //AUTOMATA
 
 typedef struct{
@@ -75,7 +73,7 @@ typedef struct{
 	delta_struct * delta;	
 }automata_struct;
 
-*/
+
 //Gramatica Funciones
 int createGramatica();
 int initializeFunctions();
@@ -113,9 +111,7 @@ void showInitialSymbol();
 void showNonTerminalSymbols();
 void showTerminalSymbols();
 
-void reportError(char* msg,char* error);
-void makeDotFile(FILE * file);
-/*
+
 //Automata Funciones
 int createAutomata();
 int initializeNodes();
@@ -131,6 +127,7 @@ int getTransitionLeftPart(char* c);
 int getTransitionRightPart(char* c);
 int getLabelTransition(char c);
 void showTransitions();
+void reportError(char* msg,char* error);
 
 int createNewTransition(char leftLabel,char rightLabel, char transition);
 int addLabel(char c);
@@ -138,6 +135,7 @@ int labelExist(char c);
 int addLabelToLenguage(char c);
 void showLenguage();
 
+void makeDotFile(FILE * file);
 
 void afdToGr();
 statechange_struct* createStateChange(char, char, char );
@@ -158,4 +156,3 @@ char* au_getAlphabet();
 int au_isFinal(char);
 void gr_print();
 void gr_init();
-*/
