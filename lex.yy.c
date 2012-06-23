@@ -2439,11 +2439,14 @@ void showInitialSymbol(){
 }
 
 void showProductionSymbols(){
-	int i;
+	int i,k;
 	printf("Producciones\n");
 	for( i = 0; i < gramatica->production_function->size; i++){
 		if(gramatica->production_function->productions[i].leftsimbol != 0){
-			printf("%c -> %c%c\n", gramatica->production_function->productions[i].leftsimbol, gramatica->production_function->productions[i].rightsimbols[0],gramatica->production_function->productions[i].rightsimbols[1]);
+			printf("%c ->", gramatica->production_function->productions[i].leftsimbol);
+			for (k=0; k< gramatica->production_function->productions[i].rightsimbolslenght ;k++)
+			printf("%c",gramatica->production_function->productions[i].rightsimbols[k]);
+			printf("\n");
 		}
 	}
 	printf("End\n\n");
