@@ -6,6 +6,7 @@
 typedef struct{
 	char leftsimbol;
 	char rightsimbols[2];
+	int size;
 }production_struct;
 
 typedef struct{
