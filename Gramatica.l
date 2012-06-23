@@ -44,8 +44,7 @@ char leftPart=0;
 <ENDINITIALS>\{ BEGIN(LEFTPRODUCTION);
 <LEFTPRODUCTION>[A-Z] {getProductionLeftPart(*yytext);}; BEGIN(ARROW);
 <ARROW>-> BEGIN(RIGHTPRODUCTION);
-<RIGHTPRODUCTION>([A-Z][a-z]|[a-z][A-Z]|[a-z]|[A-Z]|\\) {getProduction(yytext,yyleng);}; BEGIN(PRODSEPARATOR);
-<RIGHTPRODUCTION>(([A-Z]|[a-z]|\\){3,310}|[A-Z]{2,2}|[a-z]{2,2}) {reportError("una parte derecha de producciones", yytext);}; BEGIN(ERROR);	
+<RIGHTPRODUCTION>([a-zA-Z]*|\\) {getProduction(yytext,yyleng);}; BEGIN(PRODSEPARATOR);
 <PRODSEPARATOR>, BEGIN(LEFTPRODUCTION);
 <PRODSEPARATOR>\| BEGIN(RIGHTPRODUCTION);
 <PRODSEPARATOR>\} BEGIN(ENDPRODUCTIONS);
@@ -91,6 +90,7 @@ FILE * file;
 	showInitialSymbol();
 	showProductionSymbols();
 	
+	/*
 	//Armo el Archivo;
 	makeDotFile(file);
 	
@@ -103,6 +103,7 @@ FILE * file;
 			system(strcat(argv[2]," -Tpng file.dot -o graph.png"));
 			exit(1);
 	}
+	*/
 }
 
 int addProductions(char leftside, char rightside1, char rightside2){
